@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us</title>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://threejs.org/examples/js/libs/stats.min.js"></script>
+  <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+  <style>
+    html {
+      overflow-y: scroll; /* always show vertical scrollbar space */
+    }
+
+    body {
+      margin: 0;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+    #particles-js {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+    }
+    /* Fullscreen Heading */
+    .headingdiv {
+      width: 100%;
+      background: #000;
+      color: #13E8E9;
+      font-size: xx-large;
+      text-align: center;
+      padding: 20px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: bold;
+    }
+    #headermain {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 10px 20px;
+      background-image: linear-gradient(rgba(18, 17, 17, 0.95), rgba(22, 22, 22, 0.98));
+      border-radius: 14px;
+      width: 100%;
+      box-sizing: border-box;
+      position: relative;
+    }
+    #headermain a {
+      text-decoration: none;
+      color: #fff;
+      font-size: large;
+      transition: color 0.3s ease-in-out;
+      position: relative;
+    }
+    #headermain a:hover { color: #13E8E9; }
+    #modeToggle {
+      cursor: pointer;
+      margin-left: 10px;
+      font-weight: bold;
+      color: #13E8E9;
+    }
+
+    /* Layout with Ads */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 3fr 1fr;
+      gap: 20px;
+      padding: 40px;
+    }
+    .ad-section {
+      background: rgba(26,26,26,0.85);
+      color: #ccc;
+      border: 1px solid #13E8E9;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .about-section {
+      background: rgba(26,26,26,0.85);
+      padding: 30px;
+      color: white;
+      border-radius: 12px;
+      text-align: center;
+      line-height: 1.7;
+    }
+    .about-section h2 {
+      color: #13E8E9;
+      margin-bottom: 15px;
+      font-size: 28px;
+    }
+    .team-section {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(26,26,26,0.85);
+      border-radius: 12px;
+      color: white;
+      text-align: center;
+    }
+    .team-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .team-card {
+      background: rgba(18,18,18,0.9);
+      border-radius: 10px;
+      padding: 15px;
+      width: 180px;
+      transition: transform 0.3s;
+    }
+    .team-card:hover { transform: translateY(-5px); }
+    .team-card img {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 2px solid #13E8E9;
+      margin-bottom: 10px;
+    }
+    footer {
+      margin-top: 30px;
+      padding: 15px;
+      text-align: center;
+      color: #ccc;
+      background: rgba(26,25,25,0.85);
+    }
+    /* Chatbot */
+    #chatbot {
+      position: fixed;
+      bottom: 80px; right: 20px;
+      width: 300px;
+      max-height: 400px;
+      background: rgba(26,26,26,0.95);
+      border: 2px solid #13E8E9;
+      border-radius: 12px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+    }
+    #chatbot header {
+      background: #13E8E9;
+      color: black;
+      padding: 10px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #chatbot-messages { flex:1; padding:10px; overflow-y:auto; color:white; }
+    #chatbot input { width:80%; padding:10px; border:none; outline:none; }
+    #chatbot button { width:20%; background:#13E8E9; border:none; cursor:pointer; }
+
+    /* Light Mode */
+    body.light-mode {
+      background: #fff;
+      color: #222;
+    }
+    body.light-mode .headingdiv { background: #fff; color: #FF0000; }
+    body.light-mode .about-section,
+    body.light-mode .team-section,
+    body.light-mode .ad-section {
+      background: rgba(240,240,240,0.95);
+      color: #222;
+    }
+    body.light-mode .team-card {
+      background: #f5f5f5;
+      color: #222;
+    }
+    body.light-mode footer {
+      background: #f5f5f5;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="headingdiv">
+    <span><i>About</i> <span id="typed_headings"></span></span>
+  </div>
+
+  <div id="headermain">
+    <a href="index.html"><i class="fa-solid fa-arrow-left fa-beat" style="color:#13E8E9;font-size:40px;"></i></a>
+    <h2 style="color:#13E8E9; margin:0;">Back to Home</h2>
+    <a href="#" id="helpBtn" style="position:absolute; right:140px;">Help ?</a>
+    <span id="modeToggle" style="position:absolute; right:60px;">☀️</span>
+  </div>
+
+  <div class="main-layout">
+    <!-- Left Ads -->
+    <div class="ad-section">Ad Space<br><small>(Place your ad)</small></div>
+
+    <!-- Main Content -->
+    <div>
+      <section class="about-section">
+        <h2>Who We Are</h2>
+        <p>
+          Welcome to our <b>Gaming Hub</b> – a futuristic platform designed to be a one-stop store for games.  
+          Whether you love action, puzzles, or indie creations, we’ve got it all. Our goal is to create a <b>next-level play store clone for gamers</b> worldwide.
+        </p>
+        <p>
+          With real-time updates, immersive design, and smooth navigation, we ensure gamers enjoy exploring and downloading without limits.
+        </p>
+      </section>
+
+      <section class="team-section">
+        <h2>Our Crew</h2>
+        <div class="team-grid">
+          <div class="team-card">
+            <img src="./imgs/frontend.jpeg" alt="Frontend">
+            <h3 class="role" style="color:#13E8E9;">Frontend Architect</h3>
+            <p>Crafts sleek user experiences</p>
+          </div>
+          <div class="team-card">
+            <img src="./imgs/backend.jpg" alt="Backend">
+            <h3 class="role" style="color:#13E8E9;">Backend Engineer</h3>
+            <p>Builds powerful servers</p>
+          </div>
+          <div class="team-card">
+            <img src="./imgs/UI-UX.jpeg" alt="UI/UX">
+            <h3 class="role" style="color:#13E8E9;">UI/UX Specialist</h3>
+            <p>Designs intuitive flows</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Ads -->
+    <div class="ad-section">Ad Space<br><small>(Promotions here)</small></div>
+  </div>
+
+  <footer>© 2025 Gaming Hub. All rights reserved.</footer>
+
+  <!-- Chatbot -->
+  <div id="chatbot">
+    <header>
+      AI Assistant <span id="closeChat" style="cursor:pointer;">&times;</span>
+    </header>
+    <div id="chatbot-messages"></div>
+    <div style="display:flex;">
+      <input type="text" id="userInput" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+
+    // Typed.js
+    new Typed('#typed_headings', {
+      strings: ['Us!', 'Our Platform!', 'Gaming Hub!', 'Our Vision!'],
+      loop: true, typeSpeed: 70, backSpeed: 50, backDelay: 2000
+    });
+
+    // Particles.js
+    function loadParticles(color) {
+      particlesJS("particles-js", {
+        particles: {
+          number: { value: 100, density: { enable: true, value_area: 800 } },
+          color: { value: color },
+          shape: { type: "circle" },
+          opacity: { value: 0.5 },
+          size: { value: 4, random: true },
+          line_linked: { enable: false },
+          move: { enable: true, speed: 1.5 }
+        },
+        interactivity: {
+          events: { onhover:{ enable:true, mode:'bubble' }, onclick:{ enable:true, mode:'push' } },
+          modes: { bubble:{ distance:200, size:10 }, repulse:{ distance:200 }, push:{ particles_nb:4 } }
+        },
+        retina_detect: true
+      });
+    }
+    loadParticles("#FF0000"); // default dark mode color
+
+    // Chatbot
+    const helpBtn = document.getElementById("helpBtn");
+    const chatbot = document.getElementById("chatbot");
+    const closeChat = document.getElementById("closeChat");
+    const chatbotMessages = document.getElementById("chatbot-messages");
+
+    helpBtn.addEventListener("click", e => {
+      e.preventDefault();
+      chatbot.style.display = "flex";
+      chatbotMessages.innerHTML += `<div><b>Bot:</b> Hi there! How can I assist you today?</div>`;
+    });
+    closeChat.addEventListener("click", () => chatbot.style.display = "none");
+
+    function sendMessage() {
+      const userInput = document.getElementById("userInput");
+      const msg = userInput.value.trim();
+      if(msg){
+        chatbotMessages.innerHTML += `<div><b>You:</b> ${msg}</div>`;
+        chatbotMessages.innerHTML += `<div><b>Bot:</b> I'm here to help with "${msg}".</div>`;
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        userInput.value = "";
+      }
+    }
+
+    // Dark/Light Mode Toggle
+    const modeToggle = document.getElementById("modeToggle");
+    let lightMode = false;
+
+    modeToggle.addEventListener("click", () => {
+      lightMode = !lightMode;
+      console.log(lightMode);
+      
+      document.body.classList.toggle("light-mode", lightMode);
+      modeToggle.textContent = lightMode ? "🌙" : "☀️";
+
+      // reload particles with different colors
+      const particlesDiv = document.getElementById("particles-js");
+      particlesDiv.innerHTML = "";
+      loadParticles(lightMode ? "#0000FF" : "#FF0000");
+
+    });
+  </script>
+</body>
+</html>

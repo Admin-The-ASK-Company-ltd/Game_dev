@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simplified Game Portal</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <style>
+    /* Global Styles for Main Portal */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #000;
+      color: #e2e8f0;
+      margin: 0;
+      overflow-x: hidden;
+      display: block; 
+      min-height: auto; 
+    }
+#search-input {
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 5px rgba(0, 247, 255, 0.4);
+}
+
+#search-input:focus,
+#search-input:hover {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 12px var(--primary), 0 0 20px var(--neon-blue, #13E8E9);
+}
+
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-color: #05050c;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    :root {
+      --neon-blue: #13E8E9;
+      --primary: #00f7ff;
+      --secondary: #ff00e4;
+      --dark: #0a0a14;
+      --darker: #05050c;
+      --light: rgba(255, 255, 255, 0.9);
+    }
+
+    .headingdiv {
+      /* FIX: Changed background to transparent so particles show through */
+      background: transparent; 
+      color: var(--neon-blue);
+      font-size: 2.5rem;
+      text-align: center;
+      padding: 20px;
+      font-weight: bold;
+      text-shadow: 0 0 10px var(--neon-blue);
+      margin-bottom: 2rem;
+    }
+
+    .game-card {
+      background-color: rgba(30, 41, 59, 0.7);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .game-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px var(--neon-blue);
+    }
+
+    .category-btn.active {
+      background-color: var(--neon-blue);
+      color: black;
+      box-shadow: 0 0 8px var(--neon-blue);
+    }
+    
+    /* AUTHENTICATION PAGE CSS */
+    
+    #auth-section {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: 100;
+        display: none; 
+        justify-content: center;
+        align-items: center;
+        overflow-y: auto;
+        padding: 20px 0;
+    }
+    
+    #auth-section.active {
+        display: flex;
+    }
+
+    .auth-container {
+        position: relative;
+        width: 450px;
+        max-width: 90%;
+        height: auto;
+        min-height: 400px;
+        display: flex;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 0 50px rgba(0, 247, 255, 0.2), 0 0 50px rgba(255, 0, 228, 0.2);
+        transition: all 0.5s;
+        border: 1px solid rgba(0, 247, 255, 0.3);
+        margin: 20px 0;
+        background: rgba(10, 10, 20, 0.95);
+        padding: 40px;
+    }
+    
+    /* FIX: Back Button Style - Positioned to the top-left of the BROWSER SCREEN */
+    #backToHomeBtn {
+        position: fixed; 
+        top: 20px;         
+        left: 20px;        
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 50%;
+        width: 40px;       
+        height: 40px;      
+        color: var(--primary);
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 101; 
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #backToHomeBtn:hover {
+        background: var(--primary);
+        color: var(--dark);
+        box-shadow: 0 0 10px var(--primary);
+    }
+
+    .form-side {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+    }
+
+    /* Form toggling simplified: show one, hide the other */
+    .form-container {
+        display: none;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .form-container.active {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+
+    .form-title {
+        font-size: 32px;
+        margin-bottom: 30px;
+        font-weight: 700;
+        text-align: center;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        letter-spacing: 1.5px;
+    }
+
+    .input-group {
+        position: relative;
+        margin-bottom: 25px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 15px 20px 15px 45px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: var(--light);
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+
+    .input-group input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 15px rgba(0, 247, 255, 0.3);
+        outline: none;
+    }
+
+    .input-group i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary);
+        font-size: 18px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        border: none;
+        border-radius: 10px;
+        color: var(--dark);
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        letter-spacing: 1px;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 247, 255, 0.3);
+    }
+    
+    .form-footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .form-footer a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: color 0.3s;
+        font-weight: 600;
+    }
+
+    .form-footer a:hover {
+        color: var(--secondary);
+        text-decoration: underline;
+    }
+    
+    /* Social login icons in a horizontal row */
+    .social-login {
+        display: flex; 
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .social-btn {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--light);
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .social-btn:hover {
+        background: var(--primary);
+        color: var(--dark);
+        transform: translateY(-5px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .auth-container {
+            padding: 30px 20px;
+        }
+
+        .form-title {
+            font-size: 26px;
+        }
+        
+        #backToHomeBtn {
+            top: 15px;
+            left: 15px;
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+        }
+    }
+
+
+
+
+    /* Game card */
+    /* Flip card for game description on hover */
+.game-card {
+  perspective: 1000px; /* Enable 3D space */
+  position: relative;
+}
+
+.game-card-inner {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.game-card:hover .game-card-inner {
+  transform: rotateY(180deg);
+}
+
+.game-card-front,
+.game-card-back {
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+}
+
+.game-card-back {
+  background-color: rgba(30, 41, 59, 0.95);
+  color: #e2e8f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 15px;
+  transform: rotateY(180deg);
+  font-size: 0.9rem;
+  overflow-y: auto;
+}
+
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+
+  <button id="backToHomeBtn" onclick="toggleAuth(false)" style="display: none;">
+      <i class="fas fa-arrow-left"></i>
+  </button>
+
+  <section id="auth-section">
+      <div class="auth-container">
+          
+          <div class="form-side">
+              
+              <div class="form-container login-form active" id="loginFormContainer">
+                  <h2 class="form-title">Welcome Back</h2>
+                  <form id="loginForm">
+                      <div class="input-group">
+                          <i class="fas fa-envelope"></i>
+                          <input type="email" id="signinemail" placeholder="Email" required>
+                      </div>
+                      <div class="input-group">
+                          <i class="fas fa-lock"></i>
+                          <input type="password" id="signinpwd" placeholder="Password" required>
+                      </div>
+                      <button type="submit" class="submit-btn" onclick="finddata()">SIGN IN</button>
+                      <div class="form-footer">
+                          Don't have an account? <a href="#registerForm" id="showRegister">Create account</a>
+                      </div>
+                  </form>
+                  <div class="social-login">
+                      <div class="social-btn">
+                          <i class="fab fa-google"></i>
+                      </div>
+                      <div class="social-btn">
+                          <i class="fab fa-apple"></i>
+                      </div>
+                      <div class="social-btn">
+                          <i class="fab fa-twitter"></i>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="form-container register-form" id="registerFormContainer">
+                  <h2 class="form-title">Create Account</h2>
+                  <form id="registerForm">
+                      <div class="input-group">
+                          <i class="fas fa-user"></i>
+                          <input type="text" id="username" placeholder="Username" required>
+                      </div>
+                      <div class="input-group">
+                          <i class="fas fa-envelope"></i>
+                          <input type="email" id="email" placeholder="Email" required>
+                      </div>
+                      <div class="input-group">
+                          <i class="fas fa-lock"></i>
+                          <input type="password" id="password" placeholder="Password" required>
+                      </div>
+                      <div class="input-group">
+                          <i class="fas fa-lock"></i>
+                          <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                      </div>
+                      <button type="submit" class="submit-btn" onclick="adddatas()">SIGN UP</button>
+                      <div class="form-footer">
+                          Already have an account? <a href="#loginForm" class="switch-to-login">Sign in</a>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </section>
+  <div id="main-portal-content" class="content min-h-screen">
+    
+    <header class="fixed top-0 w-full bg-gray-900/90 py-3 shadow-2xl border-b border-cyan-500/50 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+        <div class="flex flex-wrap justify-center md:justify-start gap-4 md:gap-8 mb-3 md:mb-0">
+          <a href="#" class="text-white hover:text-cyan-400 transition" onclick="toggleAuth(false); return false;">Home</a>
+          <a href="#license-information" class="text-white hover:text-cyan-400 transition" onclick="toggleAuth(false);">About</a>
+          <a href="#loginForm" class="text-white hover:text-cyan-400 transition" onclick="toggleAuth(true, 'login'); return false;">Login</a>
+          <a href="#registerForm" class="text-white hover:text-cyan-400 transition" onclick="toggleAuth(true, 'register'); return false;">Sign up</a>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="search-input" type="text" placeholder="Search games" class="bg-gray-800 text-white p-2 rounded-full border border-cyan-400/50 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
+          <button id="search-button" class="bg-cyan-400 text-black font-bold py-2 px-4 rounded-full hover:bg-cyan-300 transition">Search</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10">
+      <div class="headingdiv">
+        <span id="headingspan"><i>Welcome to</i> <span id="typed_headings"></span></span>
+      </div>
+      <p class="text-xl text-center mb-10 text-gray-300 max-w-3xl mx-auto">
+        Welcome to our Gaming Management Website, a dynamic and innovative platform designed to bring together gamers, teams, organizers, and enthusiasts...
+      </p>
+
+      <h2 class="text-2xl font-bold mb-4 text-white">Browse Categories</h2>
+      <div id="category-bar" class="mb-10 overflow-x-auto whitespace-nowrap py-3 space-x-3 border-b border-gray-700">
+        <button class="category-btn active rounded-full py-2 px-4">Trending 🔥</button>
+        <button class="category-btn rounded-full py-2 px-4">Action 💥</button>
+        <button class="category-btn rounded-full py-2 px-4">Adventure 🗺️</button>
+        <button class="category-btn rounded-full py-2 px-4">Puzzle 🧩</button>
+        <button class="category-btn rounded-full py-2 px-4">Sports ⚽</button>
+        <button class="category-btn rounded-full py-2 px-4">Strategy 🧠</button>
+      </div>
+
+      <section class="mt-12">
+        <h2 id="games-section-title" class="text-3xl font-bold mb-6 text-gray-100">All Games</h2>
+        <div id="game-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+             <p class="text-center text-xl text-gray-400 col-span-full py-10">
+                <i class="fas fa-spinner fa-spin mr-2"></i> Loading game data from backend...
+             </p>
+        </div>
+        <div class="text-center mt-8">
+          <button id="show-more-btn" class="bg-gray-800 text-cyan-400 font-bold py-3 px-8 rounded-full hover:bg-gray-700 border border-cyan-400 transition" style="display: none;" onclick="toggleGameLimit()">Show More Games</button>
+        </div>
+      </section>
+      
+      <section id="license-information" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 mt-12 py-10 border-t border-gray-700">
+          <h2 class="text-4xl font-extrabold mb-8 text-cyan-400 text-center uppercase tracking-wider">
+              <span class="border-b-4 border-cyan-400 pb-1">Our Mission</span>
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+              <div class="text-center p-6 bg-gray-900/70 rounded-xl shadow-2xl border border-cyan-500/30 transition hover:bg-gray-800/80">
+                  <span class="text-5xl mb-4 block">🎮</span>
+                  <h3 class="text-2xl font-bold mb-3 text-white">The Ultimate Hub</h3>
+                  <p class="text-gray-400">We are dedicated to building a seamless platform where every gamer, from casual player to eSports competitor, can discover, connect, and compete.</p>
+              </div>
+              <div class="text-center p-6 bg-gray-900/70 rounded-xl shadow-2xl border border-cyan-500/30 transition hover:bg-gray-800/80">
+                  <span class="text-5xl mb-4 block">✨</span>
+                  <h3 class="text-2xl font-bold mb-3 text-white">Powered by Tech</h3>
+                  <p class="text-gray-400">Our portal uses cutting-edge backend technology and a responsive, dynamic frontend, including the stunning Particles.js effect, to deliver a superior user experience.</p>
+              </div>
+              <div class="text-center p-6 bg-gray-900/70 rounded-xl shadow-2xl border border-cyan-500/30 transition hover:bg-gray-800/80">
+                  <span class="text-5xl mb-4 block">🌐</span>
+                  <h3 class="text-2xl font-bold mb-3 text-white">Open & Free</h3>
+                  <p class="text-gray-400">We believe in open access and transparency. Our goal is to make great gaming accessible to everyone, everywhere, at any time.</p>
+              </div>
+          </div>
+
+          <hr class="border-gray-700 my-10">
+
+          <h3 class="text-2xl font-bold mb-5 text-gray-100 border-b border-gray-700 pb-2">Technical Information & License Compliance</h3>
+          <p class="text-gray-400 mb-6">
+              We prioritize transparency and adhere to all open-source licensing agreements. We appreciate the work of the global open-source community that powers many of our technical features.
+          </p>
+
+          <div class="bg-gray-800/70 p-6 rounded-lg shadow-inner overflow-x-auto text-sm text-gray-300">
+              <h4 class="text-lg font-semibold mb-3 text-cyan-400">The MIT License (Open Source Component)</h4>
+              <pre>
+The MIT License (MIT)
+
+Copyright (c) 2015, Vincent Garreau
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+              </pre>
+          </div>
+      </section>
+      </main>
+
+    <footer class="mt-20 border-t border-gray-700 bg-gray-900 py-8 text-center text-gray-400">
+      <p class="mb-4 text-sm">&copy; 2024 Simplified Game Portal. All rights reserved.</p>
+    </footer>
+  </div>
+  <script>
+
+    async function adddatas() {
+    // Collect all form values
+    const email = document.getElementById("email").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+        console.log("Form Data:", { email, username, password, confirmPassword });
+        
+    // Check if any field is empty
+    if (!email || !username || !password || !confirmPassword) {
+        alert("Please fill all the fields");
+        return;
+    }
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+    }
+    try {
+        axios.post('http://localhost:3200/postlogin', {
+            name:username,
+            email:email,
+            password:password
+        })
+        .then(response => {
+            console.log("✅ Registration successful:", response.data);
+            alert("✅ Registration successful! You can now log in.");
+            // Clear form fields
+            document.getElementById("email").value = "";
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+            document.getElementById("confirmPassword").value = "";
+            // Switch to login form
+            showLoginForm();
+        })
+        .catch(error => {
+            console.error("❌ Registration error:", error.response ? error.response.data : error.message);
+            if (error.response && error.response.data && error.response.data.message) {
+                alert(`Error: ${error.response.data.message}`);
+            } else {
+                alert("An error occurred during registration. Please try again later.");
+            }
+        });
+    } catch (error) {
+        console.error("Error during registration:", error);
+        alert("An error occurred during registration. Please try again later.");
+    }
+}
+
+
+async function finddata(){
+    const email = document.getElementById("signinemail").value.trim();
+    const password = document.getElementById("signinpwd").value.trim();
+    console.log("Login Data:", { email, password });
+
+    if (!email || !password) {
+        alert("Please fill all the fields");
+        return;
+    }
+
+    try {
+        axios.post('http://localhost:3200/getlogin', {
+            email, password 
+        })
+        .then(response => {
+            console.log("✅ Login successful:", response.data);
+            alert("✅ Login successful! Welcome back.");
+            // Clear form fields
+            document.getElementById("signinemail").value = "";
+            document.getElementById("signinpwd").value = "";
+            // Close auth section
+            toggleAuth(false);
+        })
+        .catch(error => {
+            console.error("❌ Login error:", error.response ? error.response.data : error.message);
+            if (error.response && error.response.data && error.response.data.message) {
+                alert(`Error: ${error.response.data.message}`);
+            } else {
+                alert("An error occurred during login. Please try again later.");
+            }
+        });
+    } catch (error) {
+        console.error("Error during login:", error);
+        alert("An error occurred during login. Please try again later.");
+    }
+}
+const INITIAL_GAME_LIMIT = 10;
+let currentGameLimit = INITIAL_GAME_LIMIT;
+let allGames = [];
+let isAuthActive = false;
+
+// --- TYPED.JS FUNCTION ---
+function initializeAnimatedHeader() {
+    const typedOptions = {
+        strings: ["The Game Portal.", "New Game World.", "Your Gaming Hub."],
+        typeSpeed: 50,
+        backSpeed: 25,
+        backDelay: 1500,
+        loop: true
+    };
+    new Typed('#typed_headings', typedOptions);
+}
+
+// --- AUTHENTICATION LOGIC ---
+const authSection = document.getElementById('auth-section');
+const mainContent = document.getElementById('main-portal-content');
+const loginFormContainer = document.getElementById('loginFormContainer');
+const registerFormContainer = document.getElementById('registerFormContainer');
+const showRegisterLink = document.getElementById('showRegister');
+const switchToLoginLink = document.querySelector('.switch-to-login');
+const backToHomeBtn = document.getElementById('backToHomeBtn');
+
+window.toggleAuth = function(show = true, initialForm = 'login') {
+    if (show) {
+        authSection.classList.add('active');
+        mainContent.style.display = 'none';
+        document.body.style.overflow = 'hidden'; 
+        isAuthActive = true;
+        backToHomeBtn.style.display = 'flex'; 
+        if (initialForm === 'register') showRegisterForm();
+        else showLoginForm();
+    } else {
+        authSection.classList.remove('active');
+        mainContent.style.display = 'block';
+        document.body.style.overflow = 'auto'; 
+        isAuthActive = false;
+        backToHomeBtn.style.display = 'none'; 
+    }
+}
+
+function showRegisterForm() {
+    if (loginFormContainer) loginFormContainer.classList.remove('active');
+    if (registerFormContainer) registerFormContainer.classList.add('active');
+}
+
+function showLoginForm() {
+    if (registerFormContainer) registerFormContainer.classList.remove('active');
+    if (loginFormContainer) loginFormContainer.classList.add('active');
+}
+
+// --- MAIN BACKEND FETCH ---
+const API_URL = 'http://localhost:3100/getdetails'; 
+
+async function fetchGamesFromBackend() {
+    const gameGrid = document.getElementById('game-grid');
+
+    try {
+        
+        const response = await fetch(API_URL); 
+        if (!response.ok) throw new Error(`Failed to fetch data: ${response.status}`);
+
+        const fetchedData = await response.json();
+
+        // --- Convert backend data into usable array ---
+        let fetchedGamesArray = [];
+        if (Array.isArray(fetchedData)) {
+            fetchedGamesArray = fetchedData;
+        } else if (typeof fetchedData === 'object' && fetchedData !== null) {
+            // If backend returns object with keys, convert to array
+            fetchedGamesArray = Object.values(fetchedData);
+        }
+
+        // --- Flatten if backend sends [message, array] ---
+        if (fetchedGamesArray.length === 2 && Array.isArray(fetchedGamesArray[1])) {
+            fetchedGamesArray = fetchedGamesArray[1];
+        }
+
+        // --- Add fallback image property ---
+        allGames = fetchedGamesArray.map(game => ({
+            ...game,
+            image: game.image || game.thumbnail || game.icon || 'https://via.placeholder.com/400x225?text=No+Image'
+        }));
+
+        if (allGames.length > 0) loadGameGrid(allGames);
+        else gameGrid.innerHTML = `<p class="text-yellow-500 col-span-full text-center py-10">No games returned from API yet.</p>`;
+
+    } catch (error) {
+        console.error("Error fetching games:", error);
+        gameGrid.innerHTML = `<p class="text-red-500 col-span-full text-center py-10"><i class="fas fa-exclamation-triangle mr-2"></i> ERROR: Could not connect to API.</p>`;
+    }
+}
+
+// --- LOAD GAME GRID ---
+function loadGameGrid(gamesToShow = allGames, searchQuery = '') {
+    const gameGrid = document.getElementById('game-grid');
+    const titleElement = document.getElementById('games-section-title');
+    const showMoreBtn = document.getElementById('show-more-btn');
+    gameGrid.innerHTML = '';
+
+    const isSearching = searchQuery !== '';
+    titleElement.textContent = isSearching 
+        ? `Search Results for: "${searchQuery}" (${gamesToShow.length} found)` 
+        : 'All Games';
+
+    const displayList = isSearching ? gamesToShow : gamesToShow.slice(0, currentGameLimit);
+
+    const isTooFewGames = isSearching || gamesToShow.length <= INITIAL_GAME_LIMIT;
+    showMoreBtn.style.display = isTooFewGames ? 'none' : 'block';
+    if (!isTooFewGames) {
+        showMoreBtn.textContent = currentGameLimit === allGames.length ? 'Show Less Games' : 'Show More Games';
+    }
+
+    if (gameGrid) {
+        displayList.forEach(game => {
+            const imageUrl = game.image.startsWith('/')
+                ? `http://localhost:3100${game.image}` // <-- use backend URL
+                : game.image || 'https://via.placeholder.com/400x225?text=No+Image';
+            console.log("Game Image URL:", imageUrl);
+            
+            // Accept localhost or relative paths
+            if (!imageUrl || imageUrl === '' || imageUrl === null) {
+                imageUrl = 'https://via.placeholder.com/400x225?text=No+Image';
+            }
+
+            // Optional: if relative path, you may prepend your server URL
+            if (imageUrl.startsWith('/') || imageUrl.startsWith('./')) {
+                imageUrl = `${window.location.origin}${imageUrl}`;
+            }
+
+            const cardHTML = `
+                <div class="game-card rounded-xl overflow-hidden shadow-lg cursor-pointer">
+                  <img src="${imageUrl}" class="w-full aspect-[16/9] object-cover" alt="${game.title || 'Untitled Game'} thumbnail">
+                  <div class="p-3">
+                    <h3 class="text-base font-semibold truncate">${game.title || 'Untitled Game'}</h3>
+                    <p class="text-xs text-gray-400">${game.description || 'Unknown Category'}</p>
+                    <button class="bg-cyan-400 hover:bg-cyan-300 text-black font-bold py-2 rounded-lg mt-2 w-full transition" onclick="handlePlayNow('${game.title}')">Play Now</button>
+                  </div>
+                </div>`;
+            
+            gameGrid.insertAdjacentHTML('beforeend', cardHTML);
+        });
+
+        if (gamesToShow.length === 0 && isSearching) {
+            gameGrid.insertAdjacentHTML('beforeend', 
+                '<p class="text-center text-xl text-gray-400 col-span-full py-10">No games found for this search!</p>'
+            );
+        }
+    }
+}
+
+
+// --- OTHER UTILITY FUNCTIONS ---
+function initializeCategoryFiltering() {
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            currentGameLimit = INITIAL_GAME_LIMIT;
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            const categoryName = button.textContent.trim().split(' ')[0];
+            let filteredGames = allGames;
+            if (categoryName !== 'Trending') {
+                filteredGames = allGames.filter(game => game.category && game.category.toLowerCase() === categoryName.toLowerCase());
+            }
+            loadGameGrid(filteredGames);
+        });
+    });
+}
+
+function initializeSearch() {
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+
+    const performSearch = () => {
+        const query = searchInput.value.toLowerCase().trim();
+        currentGameLimit = allGames.length;
+
+        if (query === '') {
+            currentGameLimit = INITIAL_GAME_LIMIT;
+            loadGameGrid(allGames);
+            document.querySelector('.category-btn').classList.add('active'); 
+            return;
+        }
+
+        const filteredGames = allGames.filter(game =>
+            (game.title && game.title.toLowerCase().includes(query)) || 
+            (game.category && game.category.toLowerCase().includes(query)) ||
+            (game.tags && game.tags.toLowerCase().includes(query))
+
+        );
+
+        loadGameGrid(filteredGames, query);
+        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+    };
+
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+}
+
+function toggleGameLimit() {
+    currentGameLimit = currentGameLimit === INITIAL_GAME_LIMIT ? allGames.length : INITIAL_GAME_LIMIT;
+    loadGameGrid(allGames);
+}
+
+function handlePlayNow(title) {
+    console.log("Starting game:", title);
+    alert(`Launching ${title}...`);
+}
+
+window.handlePlayNow = handlePlayNow;
+window.toggleGameLimit = toggleGameLimit;
+
+// --- PARTICLES.JS BACKGROUND ---
+particlesJS("particles-js", {
+    particles: {
+        number: { value: 70, density: { enable: true, value_area: 800 } },
+        color: { value: "#13E8E9" },
+        shape: { type: "circle" },
+        opacity: { value: 0.5 },
+        size: { value: 3, random: true },
+        line_linked: { enable: true, distance: 80, color: "#13E8E9", opacity: 0.4, width: 1.3 },
+        move: { enable: true, speed: 1.5 }
+    },
+    interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'bubble' }, onclick: { enable: true, mode: 'push' }, resize: true },
+        modes: { bubble: { distance: 200, size: 10, duration: 0.4 }, push: { particles_nb: 4 } }
+    },
+    retina_detect: true
+});
+
+// --- INIT ---
+window.onload = function () {
+    console.log("Starting Game Portal Initialization...");
+    initializeAnimatedHeader(); 
+    fetchGamesFromBackend(); 
+    initializeCategoryFiltering();
+    initializeSearch();
+    console.log("Initialization Complete.");
+};
+</script>
+
+</body>
+</html>
